@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "Rental";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="clearfix">
+    <span class="h2">
+        Rentals
+        @Html.ActionLink("Rental History", "History", "Rental", null, new { @class = "btn btn-light float-right" })
+    </span>
+    @Html.ActionLink("Add Rental", "Add", "Rental", null, new { @class = "btn btn-danger pull-right" })
+
+</div>
+<br />
+<table class="table table-bordered table-hover" id="rental">
+    <thead>
+        <tr>
+            <th>
+                User Name
+            </th>
+            <th>
+                Book Title
+            </th>
+            <th>
+                Date Rented
+            </th>
+            <th>
+                Return
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table> 
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#rental").DataTable({
+                ajax: {
+                    url: "/api/rental",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "user",
+                        render: function (data, type, user) {
+                            return "<a href='/user/edit/" + data.id + "'>" + data.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "book",
+                        render: function (data, type, book) {
+                            return "<a href='/book/edit/" + data.id + "'>" + data.title + "</a>";
+                        }
+                    },
+                    {
+                        data: "rentedDate",
+                        render: function (data) {
+                            var date = new Date(data);
+                            return date.toUTCString();                        }
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-rental-id=" + data + ">Return</button>";
+
+                        }
+                    }
+                ]
+            });
+
+            $("#rental").on("click", ".js-delete", function () {
+
+                var button = $(this);
+
+                bootbox.confirm("Are You Sure You Want to Return This Book?", function (result) {
+
+                    if (result) {
+
+                        $.ajax({
+                            url: "/api/rental/" + button.attr("data-rental-id"),
+                            method: "DELETE",
+                            type: "DELETE",
+                            success: function () {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        })
+                            .done(function () {
+                                toastr.success("Rentals successfully recorded.");
+
+                            })
+
+                            .fail(function () {
+                                toastr.error("Something unexpected happened.");
+                            });
+                    }
+                });
+            });
+
+        });
+    </script>
+    }

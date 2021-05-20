@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "User Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="clearfix">
+    <span class="h2">
+        Users
+    </span>
+
+    @Html.ActionLink("New User", "Add", "User", null, new { @class = "btn btn-danger pull-right" })
+
+</div>
+<br />
+<br />
+<table class="table table-bordered table-hover" id="user">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th>Date of Birth</th>
+            <th>Joined Date</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+   
+    </tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#user").DataTable({
+                ajax: {
+                    url: "/api/user",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, user) {
+                            return "<a href='/user/edit/" + user.id + "'>" + user.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "phoneNumber"
+                    },
+                    {
+                        data: "birthDate",
+                        render: function (data) {
+                            return new Date(data).toDateString();
+                        }
+                    },
+                    {
+                        data: "joinedDate",
+                        render: function (data) {
+                            return new Date(data).toDateString();
+                        }
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-user-id=" + data + ">Remove</button>";
+
+                        }
+                    }
+                ]
+            });
+
+
+        $("#user").on("click", ".js-delete", function () {
+
+            var button = $(this);
+
+            bootbox.confirm("Are You Sure You Want to Remove This User?", function (result) {
+
+                if (result) {
+
+                    $.ajax({
+
+                        url: "api/user/" + button.attr("data-user-id"),
+                        method: "DELETE",
+                        success: function () {
+                            table.row(button.parents("tr")).remove().draw();
+                        }
+                    })
+                        .done(function () {
+                            toastr.success("User successfully removed.");
+
+                        })
+
+                        .fail(function () {
+                            toastr.error("Something unexpected happened.");
+                        });
+                }
+            });
+        });
+     });
+    </script>
+}

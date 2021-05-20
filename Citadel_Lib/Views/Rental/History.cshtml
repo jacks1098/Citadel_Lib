@@ -1,0 +1,146 @@
+﻿
+@{
+    ViewBag.Title = "History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>History</h2>
+<form id="history">
+    <div class="form-group">
+        <label>User Name</label>
+        <div class="tt-container">
+            <input type="text" id="userName" name="userName" data-rule-validUser="true" value="" class="form-control" />
+        </div>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
+
+<hr />
+<table class="table table-bordered table-hover" id="userHistory">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Book Name</th>
+            <th>Rented Date</th>
+            <th>Returned Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+    $(document).ready(function () {
+
+        var vm = {
+
+        };
+
+        var users = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: '/api/user?query=%QUERY',
+                wildcard: '%QUERY'
+            }
+        });
+
+        $('#userName').typeahead({
+            minLength: 2,
+            highlight: true
+        },
+            {
+                name: 'users',
+                display: 'name',
+                source: users
+            }).on("typeahead:select", function (e, user) {
+
+                    vm.userId = user.id;
+
+
+            });
+
+      $.validator.addMethod("validUser", function () {
+          return vm.userId || $('#userName').val() === "";
+        }, "Please select a valid user.");
+
+        var validator = $("#history").validate({
+            rules: {
+                customer: { validUser: true },
+            },
+
+            submitHandler: function () {
+           //     $("#customerHistory").children.remove();
+                $('#userHistory').dataTable().fnDestroy();
+                var _url = "";
+                if (vm.userId)
+                    _url = "/api/rental/" + vm.userId;
+                else
+                    _url = "/api/rental/-1"
+
+                $.ajax({
+                    url: _url,
+                    success: function () {
+
+                        var table = $("#userHistory").DataTable({
+                            ajax: {
+                                url: _url,
+                                dataSrc: ""
+                            },
+                            columns: [
+                                {
+                                    data: "user",
+                                    render: function (data, type, user) {
+                                        return "<a href='/user/edit/" + data.id + "'>" + data.name + "</a>";
+                                    }
+                                },
+                                {
+                                    data: "book",
+                                    render: function (data, book) {
+                                        return "<a href='/book/edit/" + data.id + "'>" + data.title + "</a>";
+                                    }
+                                },
+                                {
+                                    data: "rentedDate",
+                                    render: function (data) {
+                                        var date = new Date(data);
+                                        return date.toUTCString();
+                                        //  return date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+                                    }
+                                },
+                                {
+                                    data: "returnedDate",
+                                    render: function (data) {
+                                        if (data == null)
+                                            return "Not Returned Yet.";
+                                        var date = new Date(data);
+                                        return date.toUTCString();
+
+                                    }
+                                }
+                            ]
+                        });
+
+
+                    }
+                })
+                    .done(function () {
+                        toastr.success("Rentals fetched recorded.");
+
+                    })
+
+                    .fail(function () {
+                        toastr.error("Something unexpected happened.");
+                    });
+
+                return false;
+            }
+        });
+
+    });
+    </script>
+}

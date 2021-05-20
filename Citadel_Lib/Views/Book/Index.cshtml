@@ -1,0 +1,120 @@
+﻿
+@{
+    ViewBag.Title = "Book Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="clearfix">
+    <span class="h2">
+        Books
+    </span>
+
+    @Html.ActionLink("Add Book", "Index", "Author", null, new { @class = "btn btn-danger pull-right" })
+
+</div>
+<br />
+<br />
+<table class="table table-bordered table-hover" id="book">
+    <thead>
+        <tr>
+            <th>Title</th>
+       <th>IBSN</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Published Year</th>
+            <th>Number of Times Issued</th>
+            <th>Copies Available</th>
+            <th>Price</th>
+            <th>Remove</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#book").DataTable({
+                ajax: {
+                    url: "/api/book",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "title",
+                        render: function (data,type, Book) {
+                            return "<a href='/book/edit/" + Book.id + "'>" + Book.title + "</a>";
+                        }
+                    },
+                  {
+                        data: "ibsn"
+                    },
+                     {
+                        data: "author.name"
+                    },
+                    {
+                        data: "categoryType.name"
+                    },
+                    {
+                        data: "publishedDate",
+                        render: function (data) {
+                            return new Date(data).toDateString();
+                        }
+                    },
+                    {
+                        data: "numberOfTimeIssued"
+                    },
+                    {
+                        data: "copiesAvailable"
+                    },
+                    {
+                        data: "price",
+                        render: function (data) {
+                            return data + " ₹";
+                        }
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-book-id=" + data + ">Remove</button>";
+
+                        }
+                    }
+                ]
+            });
+
+
+        $("#book").on("click", ".js-delete", function () {
+
+            var button = $(this);
+            
+            bootbox.confirm("Are You Sure You Want to Remove This Book?", function (result) {
+
+                if (result) {
+
+                    $.ajax({
+
+                        url: "api/book/" + button.attr("data-book-id"),
+                        method: "DELETE",
+                        success: function () {
+                            table.row(button.parents("tr")).remove().draw();
+                        }
+                    })
+                        .done(function () {
+                            toastr.success("Book successfully removed.");
+
+                        })
+
+                        .fail(function () {
+                            toastr.error("Something unexpected happened.");
+                        });
+                }
+            });
+        });
+     });
+
+    </script>
+}

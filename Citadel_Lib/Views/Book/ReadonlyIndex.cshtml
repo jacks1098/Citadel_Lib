@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "Book Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="clearfix">
+    <span class="h2">
+        Books
+    </span>
+</div>
+<br />
+<br />
+<table class="table table-bordered table-hover" id="book">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>IBSN</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Published Year</th>
+            <th>Number of Times Issued</th>
+            <th>Copies Available</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#book").DataTable({
+                ajax: {
+                    url: "/api/book",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "title"
+                    },
+                  {
+                        data: "ibsn"
+                    },
+                     {
+                        data: "author.name"
+                    },
+                    {
+                        data: "categoryType.name"
+                    },
+                    {
+                        data: "publishedDate",
+                        render: function (data) {
+                            return new Date(data).toDateString();
+                        }
+                    },
+                    {
+                        data: "numberOfTimeIssued"
+                    },
+                    {
+                        data: "copiesAvailable"
+                    },
+                    {
+                        data: "price",
+                        render: function (data) {
+                            return data + " ₹";
+                        }
+                    }
+                ]
+            });
+     });
+
+    </script>
+}

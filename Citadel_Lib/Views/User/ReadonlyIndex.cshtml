@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewBag.Title = "User Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="clearfix">
+    <span class="h2">
+        Users
+    </span>
+</div>
+<br />
+<br />
+
+<table class="table table-bordered table-hover" id="user">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th>Date of Birth</th>
+            <th>Joined Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#user").DataTable({
+                ajax: {
+                    url: "/api/user",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "phoneNumber"
+                    },
+                    {
+                        data: "birthDate",
+                        render: function (data) {
+                            return new Date(data).toDateString();
+                        }
+                    },
+                    {
+                        data: "joinedDate",
+                        render: function (data) {
+                            return new Date(data).toDateString();
+                        }
+                    }
+                ]
+            });
+     });
+    </script>
+}

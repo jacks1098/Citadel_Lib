@@ -1,0 +1,134 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Add Rental";
+
+}
+
+<h2>Add Rental</h2>
+@Html.ValidationSummary()
+<form id="newRental">
+    <div class="form-group">
+        <label>User</label>
+        <div class="tt-container">
+            <input type="text" id="user" name="user" data-rule-validUser="true"  value="" class="form-control" aria-invalid="false"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Book</label>
+        <div class="tt-container">
+            <input type="text" id="book" name="book" data-rule-bookSelected value="" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <ul id="books" class="list-group"></ul>
+        </div>
+    </div>
+
+
+    <button class="btn btn-primary">Submit</button>
+</form>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var vm = {
+                bookIds: []
+            };
+
+            var users = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/user?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            var books = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('title'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/book?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#user').typeahead(
+                {
+                    minLength: 2,
+                    highlight: true
+                },
+                {
+                    name: 'user',
+                    display: 'name',
+                    source: users
+                }
+            ).on("typeahead:select", function (e, user) {
+                vm.userId = user.id;
+            });
+
+            $('#book').typeahead(
+                {
+                    minLength: 2,
+                    highlight: true
+                },
+                {
+                    name: 'book',
+                    display: 'title',
+                    source: books
+                }
+            ).on("typeahead:select", function (e, book) {
+                if (vm.bookIds.find(x => x == book.id) === undefined) {
+                    $('#books').append("<li class='list-group-item'>" + book.title +
+                        "<span class= 'close' id = " + book.id + " name = 'close' style='color:black'>&times;</span ></li>");
+                    vm.bookIds.push(book.id);
+                }
+                $('#book').typeahead("val", "");
+            });
+
+            $('#books').on("click", ".close", function () {
+                var index = vm.bookIds.indexOf($(this).id);
+                vm.bookIds.splice(index, 1);
+                $(this).parent().remove();
+            });
+
+            $.validator.addMethod("validUser", function () {
+                return vm.userId && vm.userId !== 0;
+            }, "Please select a valid User.");
+
+            $.validator.addMethod("bookSelected", function () {
+                return vm.bookIds.length > 0;
+            }, "Please select at least one Book.");
+
+            var validator = $('#newRental').validate({
+                rules: {
+                    user: { validUser: true },
+                    book: { bookSelected: true }
+                },
+                submitHandler: function () {
+                    $.ajax({
+                        url: "/api/Rental",
+                        method: "POST",
+                        data: vm
+                    })
+                        .done(function () {
+                            toastr.success("Rental recorded successfully.");
+                            $('#user').typeahead('val', '');
+                            $('#book').typeahead('val', '');
+                            $('#books').empty();
+                            vm = { bookIds: [] };
+                            validator.resetForm();
+                        })
+                        .fail(function () {
+                            toastr.error("Something unexpected happened.");
+                        });
+                    return false;
+                }
+            });
+
+        });
+    </script>
+}

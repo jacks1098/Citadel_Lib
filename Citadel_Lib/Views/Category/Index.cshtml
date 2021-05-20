@@ -1,0 +1,27 @@
+﻿@model Citadel_Lib.Models.CategoryType
+@{
+    ViewBag.Title = "Add category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Add category</h2>
+
+
+@using (Html.BeginForm("Add", "Category"))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
+    </div>
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Save</button>
+    <span> &nbsp;&nbsp;</span>
+        @Html.ActionLink("Skip", "Add", "Book", null, new { @class = "btn btn-danger"})
+   
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval");
+}

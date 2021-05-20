@@ -1,0 +1,76 @@
+﻿@model Citadel_Lib.ViewModels.ManageBookViewModel
+@{
+    ViewBag.Title = "Add Book";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{var title = @Model.Book.Id == 0 ? "Add Book" : "Edit Book";}
+
+<div class="clearfix">
+    <span class="h2">
+        @title
+    </span>
+
+</div>
+
+@using (Html.BeginForm("Save", "Book"))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.Title)
+        @Html.TextBoxFor(m => m.Book.Title, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Book.Title)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.IBSN)
+        @Html.TextBoxFor(m => m.Book.IBSN, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Book.IBSN)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.AuthorId)
+
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Book.AuthorId, new SelectList(Model.Authors, "Id", "Name"), "Select Author", new { @class = "form-control" })
+
+           
+
+            @Html.ValidationMessageFor(m => m.Book.AuthorId)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.CategoryTypeId)
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Book.CategoryTypeId, new SelectList(Model.CategoryTypes, "Id", "Name"), "Select Category Type", new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Book.CategoryTypeId)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.PublishedDate)
+        @Html.TextBoxFor(m => m.Book.PublishedDate, "{0: dd/MM/yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Book.PublishedDate)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.CopiesAvailable)
+        @Html.TextBoxFor(m => m.Book.CopiesAvailable, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Book.CopiesAvailable)
+    </div>
+
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Book.Price)
+        @Html.TextBoxFor(m => m.Book.Price, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Book.Price)
+    </div>
+
+    @Html.HiddenFor(m => m.Book.Id)
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Save</button>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}

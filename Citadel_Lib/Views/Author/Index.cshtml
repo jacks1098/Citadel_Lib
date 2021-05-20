@@ -1,0 +1,29 @@
+﻿@model Citadel_Lib.Models.Author
+@{
+    ViewBag.Title = "Add Author";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Add Author</h2>
+
+
+@using (Html.BeginForm("Add", "Author"))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <span>&nbsp;&nbsp;</span>    
+    @Html.ActionLink("Skip", "Index", "Category", null, new { @class = "btn btn-danger"})
+  
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval");
+}
