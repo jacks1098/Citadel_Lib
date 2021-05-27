@@ -1,4 +1,5 @@
-﻿using Citadel_Lib.Models;
+﻿using Citadel_Lib.Dto;
+using Citadel_Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,12 @@ namespace Citadel_Lib.Controllers
             return View();
         }
 
-        public ActionResult Add(Author author)
+        public ActionResult Add(AuthorDto authorDto)
         {
             if (!ModelState.IsValid)
-                return View("Index", author);
+                return View("Index", authorDto);
 
+            var author = AutoMapper.Mapper.Map<Author>(authorDto);
             _context.Authors.Add(author);
             _context.SaveChanges();
 

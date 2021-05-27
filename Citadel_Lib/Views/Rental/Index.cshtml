@@ -45,14 +45,14 @@
                 },
                 columns: [
                     {
-                        data: "user",
-                        render: function (data, type, user) {
+                        data: "userDto",
+                        render: function (data, type, userDto) {
                             return "<a href='/user/edit/" + data.id + "'>" + data.name + "</a>";
                         }
                     },
                     {
-                        data: "book",
-                        render: function (data, type, book) {
+                        data: "bookDto",
+                        render: function (data, type, bookDto) {
                             return "<a href='/book/edit/" + data.id + "'>" + data.title + "</a>";
                         }
                     },

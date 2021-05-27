@@ -5,12 +5,12 @@
 }
 
 <h2>Add Rental</h2>
-@Html.ValidationSummary()
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 <form id="newRental">
     <div class="form-group">
         <label>User</label>
         <div class="tt-container">
-            <input type="text" id="user" name="user" data-rule-validUser="true"  value="" class="form-control" aria-invalid="false"/>
+            <input type="text" id="user" name="user" data-rule-validUser value="" class="form-control" />
         </div>
     </div>
     <div class="form-group">
@@ -34,6 +34,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script>
         $(document).ready(function () {
+            var errormsg = "";
             var vm = {
                 bookIds: []
             };
@@ -112,8 +113,26 @@
                     $.ajax({
                         url: "/api/Rental",
                         method: "POST",
-                        data: vm
+                        data: vm,
+                        error: function (x, e) {
+                            if (x.status == 0) {
+                                errormsg = 'You are offline!!\n Please Check Your Network.';
+                            } else if (x.status == 404) {
+                                errormsg = 'Requested URL not found.';
+                            } else if (x.status == 500) {
+                                errormsg = 'Internel Server Error.';
+                            } else if (e == 'parsererror') {
+                                errormsg = 'Error.\nParsing JSON Request failed.';
+                            } else if (e == 'timeout') {
+                                errormsg = 'Request Time out.';
+                            } else if (x.status == 400) {
+                                errormsg = x.responseJSON.message;
+                            } else {
+                                errormsg = 'Unknow Error.\n' + x.responseText;
+                            }
+                        }
                     })
+
                         .done(function () {
                             toastr.success("Rental recorded successfully.");
                             $('#user').typeahead('val', '');
@@ -122,11 +141,16 @@
                             vm = { bookIds: [] };
                             validator.resetForm();
                         })
+
                         .fail(function () {
-                            toastr.error("Something unexpected happened.");
+                            if (errormsg == "")
+                                toastr.error("Something unexpected happened.");
+                            else
+                                toastr.error(errormsg);
                         });
                     return false;
-                }
+                },
+              
             });
 
         });

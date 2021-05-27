@@ -1,4 +1,6 @@
-﻿using Citadel_Lib.Models;
+﻿using AutoMapper;
+using Citadel_Lib.Dto;
+using Citadel_Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -23,14 +25,19 @@ namespace Citadel_Lib.Controllers.API
         }
 
         // GET api/book
-        public IHttpActionResult GetBooks(string query = null)
+        public IEnumerable<BookDto> GetBooks(string query = null)
         {
-            var books = _context.Books.Include(x => x.CategoryType).Include(x => x.Author).Where(x => x.IsAvailable == true).ToList();
+            var books = _context.Books
+                .Include(x => x.CategoryType)
+                .Include(x => x.Author)
+                .ToList()
+                .Where(x => x.IsAvailable == true);
 
             if (!String.IsNullOrWhiteSpace(query))
-                books = books.Where(x => x.Title.Contains(query) && x.IsAvailable == true && x.CopiesAvailable > 0).ToList();
+                books = books.Where(x => x.Title.Contains(query) && x.CopiesAvailable > 0);
 
-            return Ok(books);
+            var bookDtos = books.Select(Mapper.Map<Book, BookDto>);
+            return bookDtos;
         }
 
         // GET api/book/{id}

@@ -1,4 +1,5 @@
-﻿using Citadel_Lib.Models;
+﻿using Citadel_Lib.Dto;
+using Citadel_Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,8 @@ namespace Citadel_Lib.ViewModels
 {
     public class ManageBookViewModel
     {
-        public Book Book { get; set; }
-        public IEnumerable<CategoryType> CategoryTypes { get; set; }
-        public IEnumerable<Author> Authors { get; set; }
+        public BookDto BookDto { get; set; }
+        public IEnumerable<CategoryTypeDto> CategoryTypeDtos { get; set; }
+        public IEnumerable<AuthorDto> AuthorDtos { get; set; }
     }
 }

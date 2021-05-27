@@ -93,13 +93,13 @@
                             },
                             columns: [
                                 {
-                                    data: "user",
+                                    data: "userDto",
                                     render: function (data, type, user) {
                                         return "<a href='/user/edit/" + data.id + "'>" + data.name + "</a>";
                                     }
                                 },
                                 {
-                                    data: "book",
+                                    data: "bookDto",
                                     render: function (data, book) {
                                         return "<a href='/book/edit/" + data.id + "'>" + data.title + "</a>";
                                     }

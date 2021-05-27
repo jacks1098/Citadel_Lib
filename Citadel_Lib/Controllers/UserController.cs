@@ -1,4 +1,6 @@
-﻿using Citadel_Lib.Models;
+﻿using AutoMapper;
+using Citadel_Lib.Dto;
+using Citadel_Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,27 +33,31 @@ namespace Citadel_Lib.Controllers
         public ActionResult Add()
         {
             var user = new User();
+            var userDto = Mapper.Map<UserDto>(user);
 
-            return View(user);
+            return View(userDto);
         }
 
         [Authorize(Roles = RollName.CanManageRentals)]
         public ActionResult Edit(int id)
         {
             var user = _context.User.Single(x => x.Id == id);
+            var userDto = Mapper.Map<UserDto>(user);
 
-            return View("Add",user);
+            return View("Add",userDto);
 
         }
 
         [Authorize(Roles = RollName.CanManageRentals)]
-        public ActionResult Save(User user)
+        public ActionResult Save(UserDto userDto)
         {
             if(!ModelState.IsValid)
             {
-                return View("Add", user);
+                return View("Add", userDto);
             }
 
+            var user = Mapper.Map<UserDto,User>(userDto);
+            user.Id = userDto.Id;
             if(user.Id == 0)
             {
                 user.IsExistUser = true;

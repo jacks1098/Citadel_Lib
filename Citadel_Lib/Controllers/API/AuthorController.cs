@@ -22,7 +22,7 @@ namespace Citadel_Lib.Controllers.API
         {
             _context.Dispose();
         }
-        public IHttpActionResult GetAuthors(string query = null)
+        public IEnumerable<AuthorDto> GetAuthors(string query = null)
         {
             var authors = _context.Authors.ToList();
             
@@ -30,7 +30,9 @@ namespace Citadel_Lib.Controllers.API
             if (!String.IsNullOrWhiteSpace(query))
                 authors =  authors.Where(x => x.Name.Contains(query)).ToList();
 
-            return Ok(authors);
+            var authorDtos =authors.Select(Mapper.Map<Author, AuthorDto>);
+
+            return authorDtos;
         }
     }
 }

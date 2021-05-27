@@ -1,4 +1,5 @@
-﻿using Citadel_Lib.Models;
+﻿using Citadel_Lib.Dto;
+using Citadel_Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,16 +25,18 @@ namespace Citadel_Lib.Controllers.API
         }
 
         // GET api/user
-        public IHttpActionResult GetUsers(string query = null)
+        public IEnumerable<UserDto> GetUsers(string query = null)
         {
-            var users = _context.User.Where(x => x.IsExistUser == true).ToList();
+            var users = _context.User.ToList().Where(x => x.IsExistUser == true);
 
             if(!String.IsNullOrWhiteSpace(query))
             {
-                users = users.Where(x => x.Name.Contains(query) && x.IsExistUser == true).ToList();
+                users = users.ToList().Where(x => x.Name.Contains(query));
             }
+
+            var userDtos = users.Select(AutoMapper.Mapper.Map<User,UserDto>);
             
-            return Ok(users);
+            return userDtos;
         }
 
         // DELETE api/user/{id}

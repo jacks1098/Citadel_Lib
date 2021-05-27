@@ -1,4 +1,6 @@
-﻿using Citadel_Lib.Models;
+﻿using AutoMapper;
+using Citadel_Lib.Dto;
+using Citadel_Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -22,29 +24,46 @@ namespace Citadel_Lib.Controllers.API
             _context.Dispose();
         }
 
-        public IHttpActionResult GetRentals()
+        public IEnumerable<RentalDto> GetRentals()
         {
-            var rentals = _context.Rentals.Include(x => x.Book).Include(x => x.User).Where(x => x.ReturnedDate == null).ToList();
-            return Ok(rentals);
+            var rentalDtos = _context.Rentals
+                .Include(x => x.Book)
+                .Include(x => x.Book.Author)
+                .Include(x => x.Book.CategoryType)
+                .Include(x => x.User)
+                .ToList()
+                .Where(x => x.ReturnedDate == null)
+                .Select(Mapper.Map<Rental,RentalDto>)
+               ;
+
+            return rentalDtos;
         }
 
-        public IHttpActionResult GetRentals(int id)
+        public IEnumerable<RentalDto> GetRentals(int id)
         {
-            dynamic rental;
             
             if (id == -1)
-                rental = _context.Rentals.Include(x => x.Book).Include(x => x.User).ToList();
-            else
-                rental = _context.Rentals.Include(x => x.Book).Include(x => x.User).Where(x => x.ReturnedDate == null && x.UserId == id).ToList();
-           
-            return Ok(rental);
+                return _context.Rentals
+                    .Include(x => x.Book)
+                    .Include(x => x.User)
+                    .ToList()
+                    .Select(Mapper.Map<Rental, RentalDto>);
+            
+            return _context.Rentals
+                .Include(x => x.Book)
+                .Include(x => x.User)
+                .ToList()
+                .Where(x => x.ReturnedDate == null && x.UserId == id)
+                .Select(Mapper.Map<Rental, RentalDto>);
+
         }
 
         [System.Web.Http.HttpPost]
-        public IHttpActionResult CreateRental(Rental rental)
+        public IHttpActionResult CreateRental(RentalDto rentalDto)
         {
-            var user = _context.User.Single(x => x.Id == rental.UserId);
-            var books = _context.Books.Include(x => x.Author).Include(x => x.CategoryType).Where(x => rental.BookIds.Contains(x.Id)).ToList();
+            var errorMessage = "";
+            var user = _context.User.Single(x => x.Id == rentalDto.UserId);
+            var books = _context.Books.Include(x => x.Author).Include(x => x.CategoryType).Where(x => rentalDto.BookIds.Contains(x.Id)).ToList();
 
             foreach(var book in books)
             {
@@ -65,18 +84,20 @@ namespace Citadel_Lib.Controllers.API
                         _context.Rentals.Add(newRental);
                     }
                     else
-                    {
-                        ModelState.AddModelError("Error", "Rental already existed with same user.");   
-                        return BadRequest("Rental already existed with same user.");
+                    {   
+                        errorMessage += "Rental for "+ book.Title +" already existed with same user.\n";
                     }
                 }
                 else
                 {
-                    return BadRequest("Currently Book is not available.");
+                    errorMessage += "Currently "+ book.Title +" is not available.\n";
                 }
             }
             _context.SaveChanges();
-            return Ok();
+            
+            if(errorMessage == "")
+                return Ok();
+            return BadRequest(errorMessage);
         }
 
         [System.Web.Http.HttpDelete]

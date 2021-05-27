@@ -26,15 +26,16 @@ namespace Citadel_Lib.Controllers
         {
             return View();
         }
-        public ActionResult Add(CategoryType category)
+        public ActionResult Add(CategoryTypeDto categoryDto)
         {
             if (!ModelState.IsValid)
-                return View("Index", category);
+                return View("Index", categoryDto);
 
+            var category = AutoMapper.Mapper.Map<CategoryTypeDto,CategoryType>(categoryDto);
             _context.CategoryTypes.Add(category);
             _context.SaveChanges();
 
-            return RedirectToAction("Add", "Rental");
+            return RedirectToAction("Add", "Book");
         }
     }
 }

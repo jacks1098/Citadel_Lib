@@ -1,4 +1,4 @@
-﻿@model Citadel_Lib.Models.CategoryType
+﻿@model Citadel_Lib.Dto.CategoryTypeDto
 @{
     ViewBag.Title = "Add category";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,10 +14,11 @@
         @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Name)
     </div>
+
     @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-primary">Save</button>
     <span> &nbsp;&nbsp;</span>
-        @Html.ActionLink("Skip", "Add", "Book", null, new { @class = "btn btn-danger"})
+    @Html.ActionLink("Skip", "Add", "Book", null, new { @class = "btn btn-danger"})
    
 }
 

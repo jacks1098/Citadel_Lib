@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@{var title = @Model.Book.Id == 0 ? "Add Book" : "Edit Book";}
+@{var title = @Model.BookDto.Id == 0 ? "Add Book" : "Edit Book";}
 
 <div class="clearfix">
     <span class="h2">
@@ -16,56 +16,56 @@
 @using (Html.BeginForm("Save", "Book"))
 {
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.Title)
-        @Html.TextBoxFor(m => m.Book.Title, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Book.Title)
+        @Html.LabelFor(m => m.BookDto.Title)
+        @Html.TextBoxFor(m => m.BookDto.Title, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BookDto.Title)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.IBSN)
-        @Html.TextBoxFor(m => m.Book.IBSN, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Book.IBSN)
+        @Html.LabelFor(m => m.BookDto.IBSN)
+        @Html.TextBoxFor(m => m.BookDto.IBSN, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BookDto.IBSN)
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.AuthorId)
+        @Html.LabelFor(m => m.BookDto.AuthorId)
 
         <div class="input-group">
-            @Html.DropDownListFor(m => m.Book.AuthorId, new SelectList(Model.Authors, "Id", "Name"), "Select Author", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.BookDto.AuthorId, new SelectList(Model.AuthorDtos, "Id", "Name"), "Select Author", new { @class = "form-control" })
 
            
 
-            @Html.ValidationMessageFor(m => m.Book.AuthorId)
+            @Html.ValidationMessageFor(m => m.BookDto.AuthorId)
         </div>
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.CategoryTypeId)
+        @Html.LabelFor(m => m.BookDto.CategoryTypeId)
         <div class="input-group">
-            @Html.DropDownListFor(m => m.Book.CategoryTypeId, new SelectList(Model.CategoryTypes, "Id", "Name"), "Select Category Type", new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Book.CategoryTypeId)
+            @Html.DropDownListFor(m => m.BookDto.CategoryTypeId, new SelectList(Model.CategoryTypeDtos, "Id", "Name"), "Select Category Type", new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.BookDto.CategoryTypeId)
         </div>
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.PublishedDate)
-        @Html.TextBoxFor(m => m.Book.PublishedDate, "{0: dd/MM/yyyy}", new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Book.PublishedDate)
+        @Html.LabelFor(m => m.BookDto.PublishedDate)
+        @Html.TextBoxFor(m => m.BookDto.PublishedDate, "{0:dd/MM/yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BookDto.PublishedDate)
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.CopiesAvailable)
-        @Html.TextBoxFor(m => m.Book.CopiesAvailable, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Book.CopiesAvailable)
+        @Html.LabelFor(m => m.BookDto.CopiesAvailable)
+        @Html.TextBoxFor(m => m.BookDto.CopiesAvailable, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BookDto.CopiesAvailable)
     </div>
 
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Book.Price)
-        @Html.TextBoxFor(m => m.Book.Price, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Book.Price)
+        @Html.LabelFor(m => m.BookDto.Price)
+        @Html.TextBoxFor(m => m.BookDto.Price, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BookDto.Price)
     </div>
 
-    @Html.HiddenFor(m => m.Book.Id)
+    @Html.HiddenFor(m => m.BookDto.Id)
     @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-primary">Save</button>
 }
