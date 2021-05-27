@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace Citadel_Lib.Controllers.API
 {
-    [Authorize(Roles = RollName.CanManageRentals)]
+
     public class UserController : ApiController
     {
         private ApplicationDbContext _context;
@@ -25,6 +25,7 @@ namespace Citadel_Lib.Controllers.API
         }
 
         // GET api/user
+        [Authorize]
         public IEnumerable<UserDto> GetUsers(string query = null)
         {
             var users = _context.User.ToList().Where(x => x.IsExistUser == true);
@@ -41,6 +42,7 @@ namespace Citadel_Lib.Controllers.API
 
         // DELETE api/user/{id}
         [HttpDelete]
+        [Authorize(Roles = RollName.CanManageRentals)]
         public void DeleteUser(int id)
         {
             var userInDb = _context.User.SingleOrDefault(x => x.Id == id && x.IsExistUser == true);

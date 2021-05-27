@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace Citadel_Lib.Controllers.API
 {
-    [Authorize(Roles = RollName.CanManageRentals)]
+    [Authorize]
     public class AuthorController : ApiController
     {
         private ApplicationDbContext _context;

@@ -11,7 +11,7 @@ using System.Web.Http;
 
 namespace Citadel_Lib.Controllers.API
 {
-    [Authorize(Roles = RollName.CanManageRentals)]
+
     public class BookController : ApiController
     {
         private ApplicationDbContext _context;
@@ -25,6 +25,7 @@ namespace Citadel_Lib.Controllers.API
         }
 
         // GET api/book
+        [Authorize]
         public IEnumerable<BookDto> GetBooks(string query = null)
         {
             var books = _context.Books
@@ -42,6 +43,7 @@ namespace Citadel_Lib.Controllers.API
 
         // GET api/book/{id}
         [HttpDelete]
+        [Authorize(Roles = RollName.CanManageRentals)]
         public void DeleteBook(int id)
         {
             var bookInDb = _context.Books.SingleOrDefault(x => x.Id == id && x.IsAvailable == true);
